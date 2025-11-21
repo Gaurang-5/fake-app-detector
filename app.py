@@ -11,7 +11,59 @@ import hashlib
 import time
 
 # --- CONFIGURATION & STYLING ---
-st.set_page_config(page_title="BMSCE Fake App Detector", layout="wide")
+st.set_page_config(
+    page_title="BMSCE Fake App Detector",
+    page_icon="🛡️",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'Get Help': 'https://github.com/Gaurang-5/fake-app-detector',
+        'Report a bug': "https://github.com/Gaurang-5/fake-app-detector/issues",
+        'About': "# BMSCE Fake App Defense System\n7-layer detection for counterfeit apps"
+    }
+)
+
+# Mobile-optimized CSS
+st.markdown("""
+<style>
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+        .main .block-container {
+            padding: 1rem 1rem;
+        }
+        h1 {
+            font-size: 1.5rem !important;
+        }
+        h2 {
+            font-size: 1.2rem !important;
+        }
+        h3 {
+            font-size: 1rem !important;
+        }
+        .stButton button {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+        .stMetric {
+            background-color: #f0f2f6;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+    }
+    
+    /* Better touch targets for mobile */
+    .stButton button {
+        min-height: 44px;
+    }
+    
+    /* Responsive columns */
+    .row-widget.stHorizontal {
+        flex-wrap: wrap;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 st.title("🛡️ BMSCE Fake App Defense System")
 st.markdown("*Automated detection of Typosquats, Clones, and Malware overlays.*")
 

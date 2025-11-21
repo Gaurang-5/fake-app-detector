@@ -23,7 +23,7 @@ st.set_page_config(
     }
 )
 
-# Modern Minimal UI CSS
+# Modern Minimal UI CSS with Animated Background
 st.markdown("""
 <style>
     /* Import modern font */
@@ -34,21 +34,35 @@ st.markdown("""
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
+    /* Animated Background Canvas */
+    #cyber-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
+    }
+    
     /* Main container */
     .main .block-container {
         padding: 2rem 3rem;
         max-width: 1400px;
         margin: 0 auto;
+        position: relative;
+        z-index: 1;
     }
     
     /* Hero section */
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
         padding: 3rem 2rem;
         border-radius: 20px;
         text-align: center;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
     }
     
     .hero-title {
@@ -67,13 +81,14 @@ st.markdown("""
     
     /* Card design */
     .custom-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.95);
         border-radius: 16px;
         padding: 1.5rem;
         box-shadow: 0 4px 6px rgba(0,0,0,0.07);
-        border: 1px solid #f0f0f0;
+        border: 1px solid rgba(240, 240, 240, 0.5);
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
     }
     
     .custom-card:hover {
@@ -241,7 +256,201 @@ st.markdown("""
     html {
         scroll-behavior: smooth;
     }
+    
+    /* Ensure Streamlit main background is transparent */
+    .main {
+        background: transparent !important;
+    }
+    
+    /* Make sidebar semi-transparent if opened */
+    section[data-testid="stSidebar"] {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Adjust metric backgrounds for visibility */
+    div[data-testid="stMetric"] {
+        background: linear-gradient(135deg, rgba(245, 247, 250, 0.95) 0%, rgba(195, 207, 226, 0.95) 100%);
+    }
 </style>
+
+<!-- Animated Cyber Background Canvas -->
+<canvas id="cyber-canvas"></canvas>
+
+<script>
+(function() {
+    const canvas = document.getElementById('cyber-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Cyber Lock particles
+    const particles = [];
+    const particleCount = 50;
+    const mouse = { x: null, y: null, radius: 150 };
+    
+    // Lock icon as Unicode or emoji
+    const lockSymbol = '🔒';
+    
+    // Particle class
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 15 + 10;
+            this.baseX = this.x;
+            this.baseY = this.y;
+            this.density = Math.random() * 30 + 10;
+            this.vx = Math.random() * 0.5 - 0.25;
+            this.vy = Math.random() * 0.5 - 0.25;
+            this.opacity = Math.random() * 0.5 + 0.3;
+            this.rotation = Math.random() * Math.PI * 2;
+            this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+        }
+        
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.opacity;
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation);
+            ctx.font = `${this.size}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Gradient for lock
+            const gradient = ctx.createLinearGradient(-this.size/2, -this.size/2, this.size/2, this.size/2);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#667eea');
+            ctx.fillStyle = gradient;
+            
+            ctx.fillText(lockSymbol, 0, 0);
+            ctx.restore();
+        }
+        
+        update() {
+            // Mouse interaction
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let forceDirectionX = dx / distance;
+            let forceDirectionY = dy / distance;
+            let maxDistance = mouse.radius;
+            let force = (maxDistance - distance) / maxDistance;
+            let directionX = forceDirectionX * force * this.density;
+            let directionY = forceDirectionY * force * this.density;
+            
+            if (distance < mouse.radius && mouse.x != null) {
+                this.x -= directionX;
+                this.y -= directionY;
+            } else {
+                // Return to base position
+                if (this.x !== this.baseX) {
+                    let dx = this.x - this.baseX;
+                    this.x -= dx / 20;
+                }
+                if (this.y !== this.baseY) {
+                    let dy = this.y - this.baseY;
+                    this.y -= dy / 20;
+                }
+            }
+            
+            // Gentle drift
+            this.baseX += this.vx;
+            this.baseY += this.vy;
+            
+            // Wrap around edges
+            if (this.baseX > canvas.width) this.baseX = 0;
+            if (this.baseX < 0) this.baseX = canvas.width;
+            if (this.baseY > canvas.height) this.baseY = 0;
+            if (this.baseY < 0) this.baseY = canvas.height;
+            
+            // Rotate
+            this.rotation += this.rotationSpeed;
+            
+            // Pulse opacity
+            this.opacity = 0.3 + Math.sin(Date.now() / 1000 + this.density) * 0.2;
+        }
+    }
+    
+    // Initialize particles
+    function init() {
+        particles.length = 0;
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+    }
+    init();
+    
+    // Connect particles with lines
+    function connect() {
+        for (let a = 0; a < particles.length; a++) {
+            for (let b = a + 1; b < particles.length; b++) {
+                let dx = particles[a].x - particles[b].x;
+                let dy = particles[a].y - particles[b].y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 120) {
+                    ctx.strokeStyle = `rgba(102, 126, 234, ${0.2 * (1 - distance / 120)})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[a].x, particles[a].y);
+                    ctx.lineTo(particles[b].x, particles[b].y);
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+    
+    // Animation loop
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw connections
+        connect();
+        
+        // Update and draw particles
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+        }
+        
+        requestAnimationFrame(animate);
+    }
+    animate();
+    
+    // Mouse move event
+    window.addEventListener('mousemove', function(event) {
+        mouse.x = event.x;
+        mouse.y = event.y;
+    });
+    
+    // Mouse leave event
+    window.addEventListener('mouseout', function() {
+        mouse.x = null;
+        mouse.y = null;
+    });
+    
+    // Touch events for mobile
+    window.addEventListener('touchmove', function(event) {
+        if (event.touches.length > 0) {
+            mouse.x = event.touches[0].clientX;
+            mouse.y = event.touches[0].clientY;
+        }
+    });
+    
+    window.addEventListener('touchend', function() {
+        mouse.x = null;
+        mouse.y = null;
+    });
+})();
+</script>
 """, unsafe_allow_html=True)
 
 # Hero Section

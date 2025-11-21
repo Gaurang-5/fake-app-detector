@@ -352,58 +352,156 @@ def analyze_risk(target_brand, apps, legitimate_icon_path="images/real.png"):
 # --- 3. UI LAYOUT ---
 col1, col2 = st.columns([1, 2])
 
-# --- KNOWN LEGITIMATE BRANDS DATABASE ---
+# --- COMPREHENSIVE INDIAN BRANDS DATABASE ---
 KNOWN_BRANDS = {
+    # Payment Apps
     "phonepe": "PhonePe",
     "paytm": "Paytm",
     "googlepay": "Google Pay",
     "gpay": "Google Pay",
     "bhim": "BHIM",
+    "bhimupi": "BHIM UPI",
     "amazonpay": "Amazon Pay",
+    "mobikwik": "MobiKwik",
+    "freecharge": "Freecharge",
+    
+    # Major Banks (Public Sector)
+    "sbi": "State Bank of India",
+    "sbibank": "State Bank of India",
+    "statebankofindia": "State Bank of India",
+    "pnb": "Punjab National Bank",
+    "punjabnationalbank": "Punjab National Bank",
+    "bankofbaroda": "Bank of Baroda",
+    "bob": "Bank of Baroda",
+    "canarabank": "Canara Bank",
+    "canara": "Canara Bank",
+    "unionbank": "Union Bank of India",
+    "bankofindia": "Bank of India",
+    "boi": "Bank of India",
+    "indianbank": "Indian Bank",
+    "centralbankofindia": "Central Bank of India",
+    "indianoverseasbank": "Indian Overseas Bank",
+    "iob": "Indian Overseas Bank",
+    "ucbank": "UCO Bank",
+    "uco": "UCO Bank",
+    "bankofmaharashtra": "Bank of Maharashtra",
+    
+    # Private Banks
+    "hdfc": "HDFC Bank",
+    "hdfcbank": "HDFC Bank",
+    "icici": "ICICI Bank",
+    "icicibank": "ICICI Bank",
+    "axis": "Axis Bank",
+    "axisbank": "Axis Bank",
+    "kotak": "Kotak Mahindra Bank",
+    "kotakbank": "Kotak Mahindra Bank",
+    "kotakmahindra": "Kotak Mahindra Bank",
+    "indusind": "IndusInd Bank",
+    "indusindbank": "IndusInd Bank",
+    "yesbank": "YES Bank",
+    "yes": "YES Bank",
+    "idfc": "IDFC First Bank",
+    "idfcbank": "IDFC First Bank",
+    "idfcfirst": "IDFC First Bank",
+    "bandhan": "Bandhan Bank",
+    "bandhanbank": "Bandhan Bank",
+    "rbl": "RBL Bank",
+    "rblbank": "RBL Bank",
+    "federalbank": "Federal Bank",
+    "federal": "Federal Bank",
+    "southindianbank": "South Indian Bank",
+    "karnataka": "Karnataka Bank",
+    "karnatakabank": "Karnataka Bank",
+    "csb": "CSB Bank",
+    "csbbank": "CSB Bank",
+    "cityunion": "City Union Bank",
+    "dcb": "DCB Bank",
+    "dcbbank": "DCB Bank",
+    "dhanlaxmi": "Dhanlaxmi Bank",
+    "nainital": "Nainital Bank",
+    
+    # E-commerce
     "amazon": "Amazon",
     "flipkart": "Flipkart",
-    "axisbank": "Axis Bank",
-    "axis": "Axis Bank",
-    "hdfcbank": "HDFC Bank",
-    "hdfc": "HDFC Bank",
-    "icicibank": "ICICI Bank",
-    "icici": "ICICI Bank",
-    "sbibank": "SBI Bank",
-    "sbi": "SBI Bank",
-    "kotakbank": "Kotak Bank",
-    "kotak": "Kotak Bank",
+    "myntra": "Myntra",
+    "snapdeal": "Snapdeal",
+    "meesho": "Meesho",
+    "ajio": "AJIO",
+    "nykaa": "Nykaa",
+    "bigbasket": "BigBasket",
+    "grofers": "Blinkit",
+    "blinkit": "Blinkit",
+    
+    # Food Delivery
+    "swiggy": "Swiggy",
+    "zomato": "Zomato",
+    
+    # Transportation
+    "uber": "Uber",
+    "ola": "Ola",
+    "rapido": "Rapido",
+    
+    # Social Media
     "whatsapp": "WhatsApp",
     "instagram": "Instagram",
     "facebook": "Facebook",
-    "swiggy": "Swiggy",
-    "zomato": "Zomato",
-    "uber": "Uber",
-    "ola": "Ola"
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    
+    # Financial Services
+    "zerodha": "Zerodha",
+    "groww": "Groww",
+    "upstox": "Upstox",
+    "angelone": "Angel One",
+    "angelbroking": "Angel One",
+    "5paisa": "5Paisa",
+    "sharekhan": "Sharekhan",
+    
+    # Insurance
+    "lic": "LIC",
+    "licindia": "LIC",
+    "bajajallianz": "Bajaj Allianz",
+    "hdfclife": "HDFC Life",
+    "iciciprudential": "ICICI Prudential",
+    "sbilife": "SBI Life",
+    "maxlife": "Max Life"
 }
 
 def validate_brand(input_brand):
-    """Validate and correct brand name"""
-    cleaned = input_brand.lower().replace(" ", "").replace("-", "").replace("_", "")
+    """Validate and correct brand name with smart fuzzy matching"""
+    # Clean input
+    cleaned = input_brand.lower().replace(" ", "").replace("-", "").replace("_", "").replace(".com", "").replace(".in", "")
     
     # Direct match
     if cleaned in KNOWN_BRANDS:
         return KNOWN_BRANDS[cleaned], True, None
     
-    # Check if it's a typo of a known brand
+    # Smart fuzzy matching with multiple algorithms
     best_match = None
     best_similarity = 0
+    best_key = None
     
     for known_key, known_name in KNOWN_BRANDS.items():
-        similarity = fuzz.ratio(cleaned, known_key)
-        if similarity > best_similarity and similarity >= 70:
+        # Try multiple similarity algorithms
+        ratio = fuzz.ratio(cleaned, known_key)
+        partial = fuzz.partial_ratio(cleaned, known_key)
+        token_sort = fuzz.token_sort_ratio(cleaned, known_key)
+        
+        # Take the best score
+        similarity = max(ratio, partial, token_sort)
+        
+        if similarity > best_similarity:
             best_similarity = similarity
             best_match = known_name
+            best_key = known_key
     
-    if best_match and best_similarity >= 85:
-        return best_match, False, f"Did you mean '{best_match}'? (You typed '{input_brand}')"
+    # Lower threshold for detection (70% instead of 85%)
+    if best_match and best_similarity >= 70:
+        confidence = "high" if best_similarity >= 85 else "medium"
+        return best_match, False, f"⚠️ Possible typo detected! Did you mean **'{best_match}'**? (You typed '{input_brand}', {best_similarity}% match)"
     
     # If no close match, treat as custom brand
-    return input_brand, True, None
+    return input_brand, True, f"ℹ️ Proceeding with custom brand '{input_brand}' (not in known brands database)"
 
 with col1:
     st.subheader("Scope & Target")
@@ -412,11 +510,11 @@ with col1:
     # Validate brand
     target_brand, is_valid, suggestion = validate_brand(user_input)
     
-    if suggestion:
-        st.warning(f"⚠️ {suggestion}")
-        st.info(f"✅ Auto-corrected to: **{target_brand}**")
-    elif not is_valid:
-        st.warning(f"⚠️ Brand '{user_input}' not recognized. Proceeding with custom analysis.")
+    if suggestion and not is_valid:
+        st.warning(suggestion)
+        st.success(f"✅ **Auto-corrected to: {target_brand}**")
+    elif suggestion:
+        st.info(suggestion)
     
     st.info("🔍 Scope: Android Play Store + APK Mirrors + Third-party stores")
     st.caption("💡 Tip: Each scan simulates real-world diversity - results vary to demonstrate different threat patterns")

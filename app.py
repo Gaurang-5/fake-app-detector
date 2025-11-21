@@ -23,49 +23,234 @@ st.set_page_config(
     }
 )
 
-# Mobile-optimized CSS
+# Modern Minimal UI CSS
 st.markdown("""
 <style>
+    /* Import modern font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Global styles */
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Main container */
+    .main .block-container {
+        padding: 2rem 3rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* Hero section */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .hero-title {
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
+    
+    .hero-subtitle {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.2rem;
+        font-weight: 400;
+    }
+    
+    /* Card design */
+    .custom-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        border: 1px solid #f0f0f0;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .custom-card:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+    
+    /* Modern buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+    }
+    
+    .stButton button:hover {
+        box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+        transform: translateY(-2px);
+    }
+    
+    /* Metrics styling */
+    [data-testid="stMetricValue"] {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    div[data-testid="stMetric"] {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1.25rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    /* Input fields */
+    .stTextInput input {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stTextInput input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+    
+    /* Dataframe styling */
+    .stDataFrame {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    /* Status badges */
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .status-critical {
+        background: #fee;
+        color: #c33;
+    }
+    
+    .status-medium {
+        background: #fef3cd;
+        color: #856404;
+    }
+    
+    .status-safe {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    /* Section headers */
+    h2, h3 {
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        font-weight: 600;
+        border: 1px solid #e9ecef;
+    }
+    
+    /* Alert boxes */
+    .stAlert {
+        border-radius: 10px;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+    
+    /* Info boxes */
+    .stInfo {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        border-left: 4px solid #0284c7;
+    }
+    
+    .stSuccess {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-left: 4px solid #059669;
+    }
+    
+    .stWarning {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 4px solid #d97706;
+    }
+    
     /* Mobile optimizations */
     @media (max-width: 768px) {
         .main .block-container {
-            padding: 1rem 1rem;
+            padding: 1rem;
         }
-        h1 {
-            font-size: 1.5rem !important;
+        
+        .hero-title {
+            font-size: 2rem;
         }
-        h2 {
-            font-size: 1.2rem !important;
-        }
-        h3 {
-            font-size: 1rem !important;
-        }
-        .stButton button {
-            width: 100%;
-            padding: 0.75rem;
+        
+        .hero-subtitle {
             font-size: 1rem;
         }
-        .stMetric {
-            background-color: #f0f2f6;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+        
+        .hero-section {
+            padding: 2rem 1rem;
+        }
+        
+        .custom-card {
+            padding: 1rem;
+        }
+        
+        .stButton button {
+            width: 100%;
         }
     }
     
-    /* Better touch targets for mobile */
-    .stButton button {
-        min-height: 44px;
-    }
+    /* Remove default streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
     
-    /* Responsive columns */
-    .row-widget.stHorizontal {
-        flex-wrap: wrap;
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
     }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🛡️ BMSCE Fake App Defense System")
-st.markdown("*Automated detection of Typosquats, Clones, and Malware overlays.*")
+# Hero Section
+st.markdown("""
+<div class="hero-section">
+    <div class="hero-title">🛡️ Fake App Defense</div>
+    <div class="hero-subtitle">AI-Powered Detection • 7-Layer Analysis • Real-Time Protection</div>
+</div>
+""", unsafe_allow_html=True)
 
 # --- DATABASE INITIALIZATION ---
 def init_database():
@@ -556,8 +741,10 @@ def validate_brand(input_brand):
     return input_brand, True, f"ℹ️ Proceeding with custom brand '{input_brand}' (not in known brands database)"
 
 with col1:
-    st.subheader("Scope & Target")
-    user_input = st.text_input("Target Brand Name", "PhonePe")
+    st.markdown("### 🎯 Scan Configuration")
+    
+    st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+    user_input = st.text_input("Enter Brand Name", "PhonePe", placeholder="e.g., PhonePe, Axis Bank, Paytm...")
     
     # Validate brand
     target_brand, is_valid, suggestion = validate_brand(user_input)
@@ -568,10 +755,20 @@ with col1:
     elif suggestion:
         st.info(suggestion)
     
-    st.info("🔍 Scope: Android Play Store + APK Mirrors + Third-party stores")
-    st.caption("💡 Tip: Each scan simulates real-world diversity - results vary to demonstrate different threat patterns")
+    st.markdown("</div>", unsafe_allow_html=True)
     
-    if st.button("Run Detection Pipeline"):
+    # Scan scope info
+    st.markdown("""
+    <div class="custom-card">
+        <h4>📱 Scan Scope</h4>
+        <p>✓ Google Play Store<br>
+        ✓ APK Mirror Sites<br>
+        ✓ Third-party App Stores<br>
+        ✓ Suspicious Package Sources</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if st.button("🚀 Start Detection Scan", use_container_width=True):
         start_time = time.time()
         
         with st.spinner('Scanning app stores and analyzing threats...'):
@@ -599,120 +796,170 @@ with col1:
             # Store metrics
             store_metrics(target_brand, apps_scanned, threats_detected, detection_duration, accuracy)
             
-            st.success(f"✅ Scan Complete - {threats_detected} threats detected from {apps_scanned} apps analyzed in {detection_duration:.2f}s")
-            
-            # Show scan diversity info
-            st.info(f"🔄 Scanned {apps_scanned} apps including {len([a for a in raw_data if a['Type'] == 'Fake'])} potential threats and {len([a for a in raw_data if a['Type'] == 'Legit'])} legitimate apps")
+            # Success message
+            st.markdown(f"""
+            <div class="custom-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid #059669;">
+                <h3 style="margin: 0; color: #065f46;">✅ Scan Complete</h3>
+                <p style="margin: 0.5rem 0 0 0; color: #047857;">{threats_detected} threats detected from {apps_scanned} apps • Analysis time: {detection_duration:.2f}s</p>
+            </div>
+            """, unsafe_allow_html=True)
             
             # Display Real-Time Metrics
-            st.subheader("📊 Real-Time Detection Metrics")
+            st.markdown("### 📊 Detection Metrics")
             metrics = get_metrics_summary()
             
             col_m1, col_m2, col_m3, col_m4 = st.columns(4)
             with col_m1:
-                st.metric("Detection Accuracy", f"{accuracy:.2f}%", 
-                         delta=f"{accuracy - 95:.1f}%" if accuracy >= 95 else None)
+                st.metric("🎯 Accuracy", f"{accuracy:.0f}%", 
+                         delta=f"+{accuracy - 95:.0f}%" if accuracy >= 95 else None)
             with col_m2:
-                st.metric("Detection Time", f"{detection_duration:.2f}s",
-                         delta="Fast" if detection_duration < 5 else "Slow")
+                st.metric("⚡ Speed", f"{detection_duration:.2f}s",
+                         delta="Fast" if detection_duration < 5 else None)
             with col_m3:
-                st.metric("Total Threats (All-Time)", metrics['total_threats'])
+                st.metric("🛡️ Total Threats", metrics['total_threats'])
             with col_m4:
                 recurrence_rate = (metrics['recurring_threats'] / max(metrics['total_threats'], 1)) * 100
-                st.metric("Recurrence Rate", f"{recurrence_rate:.1f}%")
+                st.metric("🔄 Recurrence", f"{recurrence_rate:.0f}%")
 
 with col2:
-    st.subheader("🚨 Live Threat Dashboard")
+    st.markdown("### 🚨 Threat Dashboard")
     if 'df_results' in locals():
+        # Threat Distribution Cards
+        threat_counts = df_results['Status'].value_counts()
+        col_t1, col_t2, col_t3 = st.columns(3)
+        
+        with col_t1:
+            st.markdown(f"""
+            <div class="custom-card" style="background: linear-gradient(135deg, #fee 0%, #fdd 100%); border-left: 4px solid #c33;">
+                <div style="font-size: 0.875rem; font-weight: 600; color: #c33; text-transform: uppercase;">Critical</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #c33;">{threat_counts.get('CRITICAL', 0)}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_t2:
+            st.markdown(f"""
+            <div class="custom-card" style="background: linear-gradient(135deg, #fef3cd 0%, #fde68a 100%); border-left: 4px solid #d97706;">
+                <div style="font-size: 0.875rem; font-weight: 600; color: #d97706; text-transform: uppercase;">Medium</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #d97706;">{threat_counts.get('MEDIUM', 0)}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_t3:
+            st.markdown(f"""
+            <div class="custom-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid #059669;">
+                <div style="font-size: 0.875rem; font-weight: 600; color: #059669; text-transform: uppercase;">Safe</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #059669;">{threat_counts.get('SAFE', 0)}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
         # Color-code by risk level
         def highlight_risk(row):
             if row['Status'] == 'CRITICAL':
-                return ['background-color: #ff4b4b'] * len(row)
+                return ['background-color: #fee2e2'] * len(row)
             elif row['Status'] == 'MEDIUM':
-                return ['background-color: #ffa500'] * len(row)
+                return ['background-color: #fef3c7'] * len(row)
             else:
-                return ['background-color: #90EE90'] * len(row)
+                return ['background-color: #d1fae5'] * len(row)
         
         st.dataframe(
             df_results.style.apply(highlight_risk, axis=1),
             use_container_width=True,
-            height=300
+            height=350
         )
-        
-        # Threat Distribution
-        st.subheader("📈 Threat Distribution")
-        threat_counts = df_results['Status'].value_counts()
-        col_t1, col_t2, col_t3 = st.columns(3)
-        with col_t1:
-            st.metric("Critical", threat_counts.get('CRITICAL', 0), delta_color="inverse")
-        with col_t2:
-            st.metric("Medium", threat_counts.get('MEDIUM', 0))
-        with col_t3:
-            st.metric("Safe", threat_counts.get('SAFE', 0), delta_color="normal")
 
         # --- 4. EVIDENCE KIT (Source: PDF Page 2, "Takedown email") ---
-        st.divider()
-        st.subheader("⚡ Automated Evidence Kit")
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### ⚡ Automated Evidence Kit")
         
         # Filter for high risk apps
         high_risk_apps = df_results[df_results['Risk Score'] > 70]
         
         if not high_risk_apps.empty:
-            selected_app = st.selectbox("Select App for Takedown", high_risk_apps['App Name'].unique())
+            st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+            selected_app = st.selectbox("📱 Select App for Takedown Request", high_risk_apps['App Name'].unique())
             app_details = high_risk_apps[high_risk_apps['App Name'] == selected_app].iloc[0]
             
-            st.markdown("### Generated Takedown Request")
-            email_body = f"""
-            **To:** Google Play Trust & Safety Team
-            **Subject:** Urgent Takedown Request - Trademark Infringement by {selected_app}
+            email_body = f"""To: Google Play Trust & Safety Team
+Subject: Urgent Takedown Request - Trademark Infringement by {selected_app}
+
+Description:
+We have identified a malicious application impersonating {target_brand}.
+
+Evidence:
+• App Name: {app_details['App Name']}
+• Package ID: {app_details['Package ID']}
+• Risk Score: {app_details['Risk Score']}/100
+• Violations: {app_details['Flags']}
+
+Request:
+Please remove this application immediately to prevent user fraud.
+
+Generated by BMSCE Fake App Defense System
+Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
             
-            **Description:**
-            We have identified a malicious application impersonating {target_brand}.
-            
-            **Evidence:**
-            - **App Name:** {app_details['App Name']}
-            - **Package ID:** {app_details['Package ID']}
-            - **Risk Score:** {app_details['Risk Score']}/100
-            - **Violation:** {app_details['Flags']}
-            
-            Please remove this application immediately to prevent user fraud.
-            
-            *Generated by BMSCE Fake App Detector*
-            """
-            st.code(email_body, language="markdown")
+            st.code(email_body, language="text")
+            st.markdown("</div>", unsafe_allow_html=True)
         else:
-            st.success("No critical threats found.")
+            st.markdown("""
+            <div class="custom-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid #059669;">
+                <p style="margin: 0; color: #047857;">✅ No critical threats detected. All apps appear safe.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 # --- 5. HISTORICAL THREAT INTELLIGENCE ---
-with st.expander("📜 View Historical Threat Data"):
-    st.subheader("Threat Timeline (Last 30 Days)")
+st.markdown("<br><br>", unsafe_allow_html=True)
+with st.expander("📜 Historical Threat Intelligence"):
     history = get_threat_history(target_brand=target_brand if 'target_brand' in locals() else None, days=30)
     
     if not history.empty:
-        st.dataframe(history[['app_name', 'package_id', 'risk_score', 'detection_time', 'recurrence_count']].tail(10))
+        st.markdown("#### Threat Timeline (Last 30 Days)")
+        st.dataframe(
+            history[['app_name', 'package_id', 'risk_score', 'detection_time', 'recurrence_count']].tail(10),
+            use_container_width=True
+        )
         st.info(f"📊 Total historical detections: {len(history)}")
     else:
         st.info("No historical data available yet. Run scans to build threat intelligence.")
 
 # --- 6. THREAT MODEL ---
-with st.expander("🎯 View Threat Model & Methodology"):
-    st.markdown("""
-    ### Threat Model
-    **Attacker:** Fraudsters creating fake 'Update' apps to steal credentials.
-    **Victim:** Banking users and Brand Reputation.
-    **Impact:** Credential theft, financial loss, brand damage.
+with st.expander("🎯 Detection Methodology"):
+    col_method1, col_method2 = st.columns(2)
     
-    ### Detection Signals (7 Layers)
-    1. **Name Similarity (40 pts)** - Levenshtein distance fuzzy matching
-    2. **Package Suspicion (30 pts)** - Keyword analysis for malicious patterns
-    3. **Publisher Verification (30 pts)** - Unauthorized developer detection
-    4. **Icon Similarity (20 pts)** - Perceptual hash comparison (Computer Vision)
-    5. **Download Patterns (15 pts)** - Velocity and volume anomalies
-    6. **Historical Recurrence (10 pts)** - Re-upload detection via database
-    7. **APK Signature (15 pts)** - Binary hash verification
+    with col_method1:
+        st.markdown("""
+        #### 🔬 Detection Signals (7 Layers)
+        
+        1. **Name Similarity** (40 pts)
+           - Levenshtein distance fuzzy matching
+        
+        2. **Package Analysis** (30 pts)
+           - Malicious keyword detection
+        
+        3. **Publisher Verification** (30 pts)
+           - Unauthorized developer check
+        
+        4. **Icon Similarity** (20 pts)
+           - Computer vision analysis
+        """)
     
-    ### Risk Classification
-    - **CRITICAL (70-100)**: Immediate takedown required
-    - **MEDIUM (50-69)**: Investigation needed
-    - **SAFE (0-49)**: No action required
-    """)
+    with col_method2:
+        st.markdown("""
+        #### 📊 Risk Classification
+        
+        5. **Download Patterns** (15 pts)
+           - Volume & velocity anomalies
+        
+        6. **Historical Recurrence** (10 pts)
+           - Database threat tracking
+        
+        7. **APK Signature** (15 pts)
+           - Binary hash verification
+        
+        ---
+        
+        **🔴 CRITICAL (70-100)** → Immediate takedown  
+        **🟡 MEDIUM (50-69)** → Investigation needed  
+        **🟢 SAFE (0-49)** → No action required
+        """)

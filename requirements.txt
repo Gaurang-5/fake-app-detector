@@ -1,0 +1,9 @@
+streamlit==1.29.0
+pandas==2.1.4
+thefuzz==0.20.0
+python-Levenshtein==0.23.0
+Pillow==10.1.0
+ImageHash==4.3.2
+numpy==1.26.2
+requests==2.31.0
+beautifulsoup4==4.12.2

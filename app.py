@@ -23,7 +23,11 @@ st.set_page_config(
     }
 )
 
-# Modern Minimal UI CSS with Animated Background
+# Initialize theme state
+if 'dark_mode' not in st.session_state:
+    st.session_state.dark_mode = True
+
+# Modern Minimal UI CSS with Animated Background and Theme Toggle
 st.markdown("""
 <style>
     /* Import modern font */
@@ -32,6 +36,41 @@ st.markdown("""
     /* Global styles */
     * {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Theme Toggle Button */
+    .theme-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .theme-toggle-icon {
+        font-size: 1.2rem;
+    }
+    
+    .theme-toggle-text {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: white;
     }
     
     /* Animated Background Canvas */
@@ -43,6 +82,12 @@ st.markdown("""
         height: 100%;
         z-index: -1;
         background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
+        transition: background 0.5s ease;
+    }
+    
+    /* Light mode canvas background */
+    body.light-mode #cyber-canvas {
+        background: linear-gradient(135deg, #f0f2f6 0%, #e2e8f0 100%);
     }
     
     /* Main container */
@@ -89,11 +134,23 @@ st.markdown("""
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
+        color: #1a1a1a;
     }
     
     .custom-card:hover {
         box-shadow: 0 8px 16px rgba(0,0,0,0.12);
         transform: translateY(-2px);
+    }
+    
+    /* Light mode card styles */
+    body.light-mode .custom-card {
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(200, 200, 200, 0.3);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    body.light-mode .custom-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     }
     
     /* Modern buttons */
@@ -187,6 +244,23 @@ st.markdown("""
         font-weight: 600;
         margin-top: 2rem;
         margin-bottom: 1rem;
+        transition: color 0.3s ease;
+    }
+    
+    /* Light mode text colors */
+    body.light-mode h1,
+    body.light-mode h2,
+    body.light-mode h3,
+    body.light-mode p,
+    body.light-mode span,
+    body.light-mode label,
+    body.light-mode [data-testid="stMarkdownContainer"] {
+        color: #1a1a1a !important;
+    }
+    
+    body.light-mode .hero-title,
+    body.light-mode .hero-subtitle {
+        color: white !important;
     }
     
     /* Expander styling */
@@ -272,12 +346,93 @@ st.markdown("""
     div[data-testid="stMetric"] {
         background: linear-gradient(135deg, rgba(245, 247, 250, 0.95) 0%, rgba(195, 207, 226, 0.95) 100%);
     }
+    
+    /* Light mode specific adjustments */
+    body.light-mode div[data-testid="stMetric"] {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 242, 246, 0.9) 100%);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    body.light-mode .stDataFrame {
+        background: white;
+    }
+    
+    body.light-mode [data-testid="stExpander"] {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(200, 200, 200, 0.3);
+    }
+    
+    body.light-mode .streamlit-expanderHeader {
+        background: rgba(248, 249, 250, 0.9);
+    }
+    
+    /* Light mode input fields */
+    body.light-mode .stTextInput input {
+        background: white;
+        color: #1a1a1a;
+        border-color: #d0d0d0;
+    }
+    
+    body.light-mode .stSelectbox select {
+        background: white;
+        color: #1a1a1a;
+    }
+    
+    /* Light mode code blocks */
+    body.light-mode code {
+        background: rgba(240, 242, 246, 0.9);
+        color: #1a1a1a;
+    }
 </style>
+
+<!-- Theme Toggle Button -->
+<div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+    <span class="theme-toggle-icon" id="theme-icon">🌙</span>
+    <span class="theme-toggle-text" id="theme-text">Dark</span>
+</div>
 
 <!-- Animated Cyber Background Canvas -->
 <canvas id="cyber-canvas"></canvas>
 
 <script>
+// Theme Toggle Function
+let isDarkMode = true;
+
+function toggleTheme() {
+    isDarkMode = !isDarkMode;
+    const body = document.body;
+    const icon = document.getElementById('theme-icon');
+    const text = document.getElementById('theme-text');
+    
+    if (isDarkMode) {
+        body.classList.remove('light-mode');
+        icon.textContent = '🌙';
+        text.textContent = 'Dark';
+    } else {
+        body.classList.add('light-mode');
+        icon.textContent = '☀️';
+        text.textContent = 'Light';
+    }
+    
+    // Update Streamlit session state via query param
+    const url = new URL(window.location);
+    url.searchParams.set('theme', isDarkMode ? 'dark' : 'light');
+    window.history.pushState({}, '', url);
+}
+
+// Initialize theme from URL or default
+window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const theme = urlParams.get('theme');
+    if (theme === 'light') {
+        isDarkMode = false;
+        document.body.classList.add('light-mode');
+        document.getElementById('theme-icon').textContent = '☀️';
+        document.getElementById('theme-text').textContent = 'Light';
+    }
+});
+
+// Canvas Animation
 (function() {
     const canvas = document.getElementById('cyber-canvas');
     const ctx = canvas.getContext('2d');
@@ -323,11 +478,17 @@ st.markdown("""
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            // Gradient for lock
+            // Gradient for lock - adapts to theme
             const gradient = ctx.createLinearGradient(-this.size/2, -this.size/2, this.size/2, this.size/2);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(0.5, '#764ba2');
-            gradient.addColorStop(1, '#667eea');
+            if (isDarkMode) {
+                gradient.addColorStop(0, '#667eea');
+                gradient.addColorStop(0.5, '#764ba2');
+                gradient.addColorStop(1, '#667eea');
+            } else {
+                gradient.addColorStop(0, '#4c51bf');
+                gradient.addColorStop(0.5, '#5a67d8');
+                gradient.addColorStop(1, '#4c51bf');
+            }
             ctx.fillStyle = gradient;
             
             ctx.fillText(lockSymbol, 0, 0);
@@ -397,7 +558,12 @@ st.markdown("""
                 let distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance < 120) {
-                    ctx.strokeStyle = `rgba(102, 126, 234, ${0.2 * (1 - distance / 120)})`;
+                    // Adapt line color to theme
+                    if (isDarkMode) {
+                        ctx.strokeStyle = `rgba(102, 126, 234, ${0.2 * (1 - distance / 120)})`;
+                    } else {
+                        ctx.strokeStyle = `rgba(76, 81, 191, ${0.3 * (1 - distance / 120)})`;
+                    }
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(particles[a].x, particles[a].y);
